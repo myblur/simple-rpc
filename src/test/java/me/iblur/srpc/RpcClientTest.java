@@ -18,7 +18,7 @@ public class RpcClientTest {
     public void setUp() {
         RpcInvoker<HelloService> invoker = new RpcInvoker<>("localhost", 10210, HelloService.class);
         helloService = (HelloService) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                new Class[] { HelloService.class }, new RpcInvocationHandler(invoker));
+                new Class[]{HelloService.class}, new RpcInvocationHandler(invoker));
     }
 
     @Test(expectedExceptions = RpcNetworkException.class)
@@ -35,6 +35,11 @@ public class RpcClientTest {
     public void testNormalInvokeService() {
         String result = helloService.sayHello("Simple RPC");
         Assert.assertEquals(result, "Hello, Simple RPC");
+    }
+
+    @Test
+    public void testNoResponse() {
+        helloService.noResponse("Simple RPC");
     }
 
 }

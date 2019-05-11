@@ -1,10 +1,13 @@
 package me.iblur.srpc.proxy;
 
+import me.iblur.srpc.RpcInvoker;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import me.iblur.srpc.RpcInvoker;
-
+/**
+ * 使用JDK动态代理来无感知的完成RPC调用的内部细节
+ */
 public class RpcInvocationHandler implements InvocationHandler {
 
     private RpcInvoker<?> invoker;
@@ -17,6 +20,7 @@ public class RpcInvocationHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
+        // 排除掉所有定义在Object.class的方法，已经toString、hashCode、equals方法
         if (method.getDeclaringClass() == Object.class) {
             return method.invoke(invoker, args);
         }

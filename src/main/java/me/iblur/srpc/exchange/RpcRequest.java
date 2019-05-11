@@ -80,4 +80,12 @@ public class RpcRequest implements Serializable {
         this.arguments = arguments;
     }
 
+    public RpcRequest newRpcRequest(String interfaceClassName, String methodName, Class<?>[] parameterTypes,
+            Object[] args) {
+        this.setInterfaceClassName(interfaceClassName);
+        this.setMethodName(methodName);
+        this.setParameterTypes(parameterTypes);
+        this.setArguments(args);
+        return this;
+    }
 }

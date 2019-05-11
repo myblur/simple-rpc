@@ -121,12 +121,15 @@ public class RpcServer {
         public void run() {
             RpcResponse rpcResponse = new RpcResponse();
             try {
-                System.out.println("读取RPC请求参数");
+                // 读取数据
                 RpcRequest rpcRequest = readData();
-                System.out.println("RPC请求参数：" + rpcRequest);
+                // 调用服务
                 Object result = invokeService(rpcRequest);
+                // 写出数据
                 rpcResponse.setResponse(result);
                 writeData(rpcResponse);
+            } catch (IOException e) {
+                System.out.println("从Socket中读取或写入数据异常：" + e);
             } catch (Exception e) {
                 rpcResponse.setThrowable(e);
                 try {
@@ -139,18 +142,36 @@ public class RpcServer {
             }
         }
 
-
+        /**
+         * 将响应结果写出
+         *
+         * @param response 响应结果
+         * @throws IOException 写出结果发生异常
+         */
         private void writeData(RpcResponse response) throws IOException {
             out = new ObjectOutputStream(this.socket.getOutputStream());
             out.writeObject(response);
             out.flush();
         }
 
+        /**
+         * 从Socket中读取数据
+         *
+         * @return Rpc请求
+         * @throws IOException            读取数据异常
+         * @throws ClassNotFoundException Rpc请求，或者Rpc请求中所带的class在服务端不存在
+         */
         private RpcRequest readData() throws IOException, ClassNotFoundException {
             this.in = new ObjectInputStream(this.socket.getInputStream());
             return (RpcRequest) in.readObject();
         }
 
+        /**
+         * 调用服务的方法
+         *
+         * @param rpcRequest Rpc请求
+         * @return 调用结果
+         */
         private Object invokeService(RpcRequest rpcRequest) {
             Object serviceObject = serviceMapping.get(rpcRequest.getInterfaceClassName());
             if (null == serviceObject) {
